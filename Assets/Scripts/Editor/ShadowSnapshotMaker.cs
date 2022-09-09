@@ -61,14 +61,15 @@ namespace InTheShadow.Editor
         
         private void MakeSnapshot(RenderTexture renderTexture)
         {
-            RenderTexture.active = renderTexture;
+            Texture2D snapshot = ShadowSnapshotUtility.GetShadowSnapshot(renderTexture);
             
-            Texture2D snapshot = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+            ShadowSnapshotUtility.SaveSnapshotToPNG(snapshot, 
+                "Assets/Resources/Snapshots", 
+                $"{SceneManager.GetActiveScene().name}_snapshot.png");
             
-            snapshot.ReadPixels(new Rect(0, 0, snapshot.width, snapshot.height), 0, 0);
-
-            byte[] bytes = snapshot.EncodeToPNG();
-            System.IO.File.WriteAllBytes($"Assets/Resources/Snapshots/{SceneManager.GetActiveScene().name}_snapshot.png", bytes);
+            ShadowSnapshotUtility.SaveSnapshotAsRawData(snapshot,
+                "Assets/Resources/Snapshots", 
+                $"{SceneManager.GetActiveScene().name}_snapshot");
         }
     }
 }

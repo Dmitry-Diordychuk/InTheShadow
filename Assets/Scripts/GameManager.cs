@@ -2,22 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+namespace InTheShadow
 {
-    [SerializeField] private InputManager inputManager;
-    [SerializeField] private ShadowCasterController shadowCasterController;
-
-    // Start is called before the first frame update
-    void Start()
+    public class GameManager : MonoBehaviour
     {
-    }
+        [SerializeField] private InputManager inputManager;
+        [SerializeField] private ShadowCasterController shadowCasterController;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (inputManager.IsLeftMouseDown)
+        private Texture2D _sceneSnapshot;
+
+        // Start is called before the first frame update
+        void Start()
         {
-            shadowCasterController.RotateY(inputManager.MousePositionDelta.x);
+            //_sceneSnapshot
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if (inputManager.IsLeftMouseDown)
+            {
+                shadowCasterController.RotateY(inputManager.MousePositionDelta.x);
+            }
+
+            
         }
     }
 }
