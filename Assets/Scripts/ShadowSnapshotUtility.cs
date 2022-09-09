@@ -44,5 +44,28 @@ namespace InTheShadow
 			snapshot.Apply();
 			return snapshot;
 		}
+
+		public static float CompareSnapshots(Texture2D a, Texture2D b)
+		{
+			if (a.width != b.width || a.height != b.height)
+			{
+				return -1;
+			}
+
+			Color[] aPixels = a.GetPixels();
+			Color[] bPixels = b.GetPixels();
+
+			int wrongPixelsCounter = 0;
+			for (int i = 0; i < aPixels.Length; i++)
+			{
+				if (aPixels[i] != bPixels[i])
+				{
+					wrongPixelsCounter++;
+				}
+			}
+
+			int totalPixels = a.width * a.height;
+			return 1 - (float)wrongPixelsCounter / totalPixels;
+		}
 	}
 }
