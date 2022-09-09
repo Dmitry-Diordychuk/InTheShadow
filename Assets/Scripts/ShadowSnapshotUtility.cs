@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +7,14 @@ namespace InTheShadow
 {
 	public static class ShadowSnapshotUtility
 	{
+		[Serializable]
+		private struct RenderTextureFormat
+		{
+			public TextureFormat textureFormat;
+			public int width;
+			public int height;
+		}
+		
 		public static Texture2D GetShadowSnapshot(RenderTexture renderTexture)
 		{
 			RenderTexture.active = renderTexture;
@@ -24,6 +33,16 @@ namespace InTheShadow
 		{
 			byte[] bytes = snapshot.GetRawTextureData();
 			File.WriteAllBytes(Path.Combine(relatedPath, filename), bytes);
+		}
+
+		public static Texture2D LoadSnapshotFromRawData(string relatedPathToFile)
+		{
+			byte[] bytes = File.ReadAllBytes(relatedPathToFile);
+			int size = (int)Math.Sqrt(bytes.Length / 3); // RGB
+			Texture2D snapshot = new Texture2D(size, size, TextureFormat.RGB24, false);
+			snapshot.LoadRawTextureData(bytes);
+			snapshot.Apply();
+			return snapshot;
 		}
 	}
 }
