@@ -6,8 +6,9 @@ using UnityEngine.EventSystems;
 
 public class ShadowCasterController : MonoBehaviour
 {
-	public void RotateY(float value)
+	public void Rotate(Vector3 axis, float value)
 	{
-		gameObject.transform.Rotate(Vector3.up, value);
+		gameObject.transform.Rotate(axis, value, Space.World);
+		
 	}
 }

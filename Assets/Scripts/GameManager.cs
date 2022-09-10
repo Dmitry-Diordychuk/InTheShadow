@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -24,11 +25,18 @@ namespace InTheShadow
         [Header("Gameplay")]
         [SerializeField] private DifficultyLevel difficultyLevel = DifficultyLevel.Easy;
 
+        private Vector3 _cameraUp;
+        private Vector3 _cameraRight;
         private Texture2D _sceneSnapshot;
 
         // Start is called before the first frame update
         void Start()
         {
+            Camera mainCamera = Camera.main;
+            if (!mainCamera) throw new UnityException("Main camera doesn't exist");
+            Transform cameraTransform = mainCamera.transform;
+            _cameraUp = cameraTransform.up;
+            _cameraRight = cameraTransform.right;
             _sceneSnapshot = ShadowSnapshotUtility.LoadSnapshotFromRawData(
                 Path.Combine("Assets/Resources/Snapshots", $"{SceneManager.GetActiveScene().name}_snapshot"));
             snapshotQuad.GetComponent<Renderer>().material.mainTexture = _sceneSnapshot;
@@ -39,7 +47,12 @@ namespace InTheShadow
         {
             if (inputManager.IsLeftMouseDown)
             {
-                shadowCasterController.RotateY(inputManager.MousePositionDelta.x);
+                shadowCasterController.Rotate(_cameraUp, -inputManager.MousePositionDelta.x * Time.deltaTime * 10.0f);
+                if (difficultyLevel >= DifficultyLevel.Medium)
+                {
+                    shadowCasterController.Rotate(_cameraRight,
+                        inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
+                }
             }
             
             float snapshotsComparisonResultPercent = ShadowSnapshotUtility.CompareSnapshots(
