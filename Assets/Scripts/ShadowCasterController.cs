@@ -8,6 +8,11 @@ public class ShadowCasterController : MonoBehaviour
 {
 	public void Rotate(Vector3 axis, float value)
 	{
-		gameObject.transform.Rotate(axis, value, Space.World);
+		transform.Rotate(axis, value, Space.World);
+	}
+
+	public void RotateToSnapshotShadow(Quaternion startRotation, Quaternion endRotation, float t)
+	{
+		transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
 	}
 }
