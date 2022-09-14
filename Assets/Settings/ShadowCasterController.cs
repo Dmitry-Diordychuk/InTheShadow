@@ -9,6 +9,5 @@ public class ShadowCasterController : MonoBehaviour
 	public void Rotate(Vector3 axis, float value)
 	{
 		gameObject.transform.Rotate(axis, value, Space.World);
-		
 	}
 }

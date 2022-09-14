@@ -7,6 +7,7 @@ namespace InTheShadow.Editor
 {
     public class ShadowSnapshotMaker : EditorWindow
     {
+        private GameObject _shadowCaster;
         private RenderTexture _renderTexture;
 
         [MenuItem("Window/Custom/ShadowSnapshotMaker")]
@@ -19,6 +20,8 @@ namespace InTheShadow.Editor
         private void OnGUI()
         {
             GUILayout.Label("Shadow Snapshot Maker", EditorStyles.boldLabel);
+            _shadowCaster = (GameObject)EditorGUILayout.ObjectField("Shadow caster", _shadowCaster, typeof(GameObject),
+                true);
             _renderTexture =
                 (RenderTexture)EditorGUILayout.ObjectField("Render Texture", _renderTexture, typeof(RenderTexture),
                     false);
@@ -28,7 +31,7 @@ namespace InTheShadow.Editor
             {
                 if (GUILayout.Button("Save"))
                 {
-                    MakeSnapshot(_renderTexture);
+                    MakeSnapshot(_renderTexture, _shadowCaster.transform.rotation);
                 }
             }
             
@@ -58,18 +61,15 @@ namespace InTheShadow.Editor
             _errors.Clear();
             if (!_renderTexture) _errors.Add("There must be render texture");
         }
-        
-        private void MakeSnapshot(RenderTexture renderTexture)
+
+        private void MakeSnapshot(RenderTexture renderTexture, Quaternion sampleRotation)
         {
             Texture2D snapshot = ShadowSnapshotUtility.GetShadowSnapshot(renderTexture);
+
+            string filename = $"{SceneManager.GetActiveScene().name}_snapshot";
+            string path = "Assets/Resources/Snapshots";
             
-            ShadowSnapshotUtility.SaveSnapshotToPNG(snapshot, 
-                "Assets/Resources/Snapshots", 
-                $"{SceneManager.GetActiveScene().name}_snapshot.png");
-            
-            ShadowSnapshotUtility.SaveSnapshotAsRawData(snapshot,
-                "Assets/Resources/Snapshots", 
-                $"{SceneManager.GetActiveScene().name}_snapshot");
+            ShadowSnapshotUtility.SaveSnapshotAsRawData(snapshot, sampleRotation, path, filename);
         }
     }
 }
