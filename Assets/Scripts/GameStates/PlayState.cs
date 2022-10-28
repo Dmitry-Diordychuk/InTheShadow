@@ -14,8 +14,8 @@ namespace InTheShadow
         }
         
         private Renderer _snapshotQuadRend;
+        private Vector3 _cameraPosition;
         private Vector3 _cameraUp;
-        private Vector3 _cameraRight;
         private Vector3 _shadowProjectionQuadNormal;
 
         public override void StartState()
@@ -24,11 +24,9 @@ namespace InTheShadow
             if (!mainCamera) throw new UnityException("Main camera doesn't exist");
             Transform cameraTransform = mainCamera.transform;
 
-            Vector3 cameraPosition = cameraTransform.position;
+            _cameraPosition = cameraTransform.position;
             _cameraUp = cameraTransform.up;
             _shadowProjectionQuadNormal = gameManager.shadowProjectionQuad.GetComponent<MeshFilter>().mesh.normals[0];
-            Vector3 cameraToShadowCaster = gameManager.shadowCasterController.gameObject.transform.position - cameraPosition;
-            _cameraRight = Vector3.Cross(_cameraUp, cameraToShadowCaster);
             _snapshotQuadRend = gameManager.snapshotQuad.GetComponent<Renderer>();
         }
 
@@ -51,7 +49,13 @@ namespace InTheShadow
         {
             if (gameManager.inputManager.IsLeftMouseDown)
             {
-                if (gameManager.difficultyLevel == GameManager.DifficultyLevel.Hard && gameManager.inputManager.IsAlterMoveKeyDown)
+                if (gameManager.difficultyLevel == GameManager.DifficultyLevel.Hard && gameManager.inputManager.IsShiftKeyDown)
+                {
+                    gameManager.shadowCasterController.RotateAll(_shadowProjectionQuadNormal, 
+                        -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
+                }
+                else if (gameManager.difficultyLevel > GameManager.DifficultyLevel.Easy &&
+                         gameManager.inputManager.IsCtrlKeyDown)
                 {
                     gameManager.shadowCasterController.Rotate(_shadowProjectionQuadNormal, 
                         -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
@@ -62,7 +66,9 @@ namespace InTheShadow
                         -gameManager.inputManager.MousePositionDelta.x * Time.deltaTime * 10.0f);
                     if (gameManager.difficultyLevel >= GameManager.DifficultyLevel.Medium)
                     {
-                        gameManager.shadowCasterController.Rotate(_cameraRight,
+                        Vector3 cameraToShadowCaster = gameManager.shadowCasterController.gameObject.transform.position - _cameraPosition;
+                        Vector3 cameraUpCrossCameraToShadowCaster = Vector3.Cross(_cameraUp, cameraToShadowCaster);
+                        gameManager.shadowCasterController.Rotate(cameraUpCrossCameraToShadowCaster,
                             gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
                     }
                 }

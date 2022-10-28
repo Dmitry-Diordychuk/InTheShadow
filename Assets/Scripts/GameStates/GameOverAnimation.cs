@@ -33,7 +33,7 @@ namespace InTheShadow
 			float t = gameManager.cameraController.FocusOnEndPosition(
 				_cameraStartPosition, _cameraEndGamePosition,
 				_cameraRotation, _cameraEndRotation);
-			gameManager.shadowCasterController.RotateToSnapshotShadow(gameManager.shadowCasterController.gameObject.transform.rotation,
+			gameManager.shadowCasterController.RotateToPerfect(gameManager.shadowCasterController.gameObject.transform.rotation,
 				gameManager.successfulRotations[gameManager.resultIndex], t);
 			if (t >= 1.0f)
 			{

@@ -14,7 +14,8 @@ namespace InTheShadow
 
         public bool IsLeftMouseDown => _leftMouseDownStarted;
 
-        public bool IsAlterMoveKeyDown => Input.GetKey(KeyCode.LeftControl);
+        public bool IsCtrlKeyDown => Input.GetKey(KeyCode.LeftControl);
+        public bool IsShiftKeyDown => Input.GetKey(KeyCode.LeftShift);
         public Vector3 MousePositionDelta => _mousePositionDelta * sensitivity;
 
         // Start is called before the first frame update

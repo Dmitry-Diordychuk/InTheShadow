@@ -12,6 +12,22 @@ namespace InTheShadow
 {
     public class GameManager : MonoBehaviour
     {
+        [Header("Dependencies")]
+        public InputManager inputManager;
+        public UIManager uiManager;
+        public CameraController cameraController;
+        public ShadowCasterController shadowCasterController;
+        
+        [Header("Objects")]
+        public RenderTexture renderTexture;
+        public GameObject shadowProjectionQuad;
+
+        [Header("Gameplay")]
+        public DifficultyLevel difficultyLevel = DifficultyLevel.Easy;
+        
+        [Header("Debug")]
+        public GameObject snapshotQuad;
+        
         public enum DifficultyLevel
         {
             Easy,
@@ -19,19 +35,7 @@ namespace InTheShadow
             Hard
         }
         
-        // Game Preferences
-        public InputManager inputManager;
-        public UIManager uiManager;
-        public CameraController cameraController;
-        public ShadowCasterController shadowCasterController;
-        public RenderTexture renderTexture;
-        public GameObject shadowProjectionQuad;
-        public GameObject snapshotQuad;
-
-        [Header("Gameplay")]
-        public DifficultyLevel difficultyLevel = DifficultyLevel.Easy;
-        
-        // Game State
+        [Header("States")]
         public _GameState[] allGameStates;
         
         public enum GameState
@@ -76,7 +80,7 @@ namespace InTheShadow
                 {
                     continue;
                 }
-                
+
                 game.InitState(gameManager: this);
 
                 if (_gameStateDictionary.ContainsKey(game.State))
