@@ -7,7 +7,7 @@ namespace InTheShadow.CustomPostProcessing
 {
     public class BlackAndWhiteRenderPassFeature : ScriptableRendererFeature
     {
-        class BlackAndWhiteRenderPass : ScriptableRenderPass
+        private class BlackAndWhiteRenderPass : ScriptableRenderPass
         {
             private RTHandle _source;
 
@@ -46,7 +46,7 @@ namespace InTheShadow.CustomPostProcessing
 
         public Settings settings = new Settings();
 
-        BlackAndWhiteRenderPass _blackAndWhitePass;
+        private BlackAndWhiteRenderPass _blackAndWhitePass;
 
         public override void Create()
         {
