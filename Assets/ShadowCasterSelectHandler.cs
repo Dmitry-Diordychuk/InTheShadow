@@ -20,7 +20,7 @@ namespace InTheShadow
 
         private void OnMouseDown()
         {
-            _shadowCasterController.selectEvent.Invoke(gameObject);
+            _shadowCasterController.selectEvent.Invoke(gameObject); // TODO: переделать
         }
     }
 }

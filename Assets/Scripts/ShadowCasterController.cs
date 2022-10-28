@@ -30,7 +30,9 @@ public class ShadowCasterController : MonoBehaviour
 
 	private void SetCurrentShadowCaster(GameObject shadowCaster)
 	{
+		if (_currentShadowCaster) _currentShadowCaster.layer = LayerMask.NameToLayer("Default");
 		_currentShadowCaster = shadowCaster;
+		_currentShadowCaster.layer = LayerMask.NameToLayer("Outline");
 	}
 
 	public void Rotate(Vector3 axis, float value)
