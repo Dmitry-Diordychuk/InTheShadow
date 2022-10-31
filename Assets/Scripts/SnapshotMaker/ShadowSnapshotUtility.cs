@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace InTheShadow
 {
@@ -17,6 +16,16 @@ namespace InTheShadow
 			public TextureFormat textureFormat;
 			public int width;
 			public int height;
+		}
+		
+		[Serializable]
+		public struct SnapshotData
+		{
+			public int width;
+			public int height;
+			public TextureFormat textureFormat;
+			public byte[] rawTextureData;
+			public List<Quaternion> rotations;
 		}
 		
 		public static Texture2D GetShadowSnapshot(RenderTexture renderTexture)
@@ -33,34 +42,24 @@ namespace InTheShadow
 			File.WriteAllBytes(filePath + ".png", bytes);
 		}
 
-		[Serializable]
-		public struct SnapshotData
-		{
-			public Quaternion rotation;
-			public int width;
-			public int height;
-			public TextureFormat textureFormat;
-			public byte[] rawTextureData;
-		}
-		
-		public static void SaveSnapshotAsRawData(Texture2D snapshot, Quaternion rotation, string relatedPath, string filename)
+		public static void SaveSnapshotAsRawData(Texture2D snapshot, List<Quaternion> rotations, string relatedPath, string filename)
 		{
 			SnapshotData snapshotData;
 			snapshotData.width = snapshot.width;
 			snapshotData.height = snapshot.height;
 			snapshotData.textureFormat = snapshot.format;
 			snapshotData.rawTextureData = snapshot.GetRawTextureData();
-			snapshotData.rotation = rotation;
+			snapshotData.rotations = rotations;
 
 			string filePathWithNumber = GenerateFileNumber(Path.Combine(relatedPath, filename));
 			using Stream stream = new FileStream(filePathWithNumber, FileMode.CreateNew, FileAccess.Write, FileShare.None);
-			IFormatter formatter = GetBinaryFormatter();
-			formatter.Serialize(stream, snapshotData);
+			//IFormatter formatter = GetBinaryFormatter();
+			//formatter.Serialize(stream, snapshotData);
+
+			ISerializer binarySerialize = new BinaryJsonSerializer();
+			binarySerialize.Serialize(stream, snapshotData);
 
 			SaveSnapshotToPNG(snapshot, filePathWithNumber);
-
-			// byte[] bytes = snapshot.GetRawTextureData();
-			// File.WriteAllBytes(, bytes);
 		}
 
 		private static string GenerateFileNumber(string filePath)
@@ -78,13 +77,6 @@ namespace InTheShadow
 
 		public static (List<Texture2D>, List<Quaternion>) LoadSnapshotFromRawData(string relatedPathToFile)
 		{
-			// byte[] bytes = File.ReadAllBytes(relatedPathToFile);
-			// int size = (int)Math.Sqrt(bytes.Length / 3); // RGB
-			// Texture2D snapshot = new Texture2D(size, size, TextureFormat.RGB24, false);
-			// snapshot.LoadRawTextureData(bytes);
-			// snapshot.Apply();
-			// return snapshot;
-
 			List<Texture2D> snapshots = new List<Texture2D>();
 			List<Quaternion> rotations = new List<Quaternion>();
 
@@ -93,12 +85,13 @@ namespace InTheShadow
 			while (File.Exists(filePathWithNumber))
 			{
 				using Stream stream = new FileStream(filePathWithNumber, FileMode.Open, FileAccess.Read, FileShare.Read);
-				IFormatter formatter = GetBinaryFormatter();
-				SnapshotData snapshotData = (SnapshotData) formatter.Deserialize(stream);
+				ISerializer binarySerialize = new BinaryJsonSerializer();
+				// IFormatter formatter = GetBinaryFormatter();
+				SnapshotData snapshotData = binarySerialize.Deserialize<SnapshotData>(stream);
 				
 				snapshots.Add(new Texture2D(snapshotData.width, snapshotData.height, snapshotData.textureFormat, false));
 				snapshots.Last().LoadRawTextureData(snapshotData.rawTextureData);
-				rotations.Add(snapshotData.rotation);
+				rotations.AddRange(snapshotData.rotations);
 				snapshots.Last().Apply();
 
 				i++;

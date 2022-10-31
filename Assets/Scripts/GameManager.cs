@@ -16,20 +16,14 @@ namespace InTheShadow
         public InputManager inputManager;
         public UIManager uiManager;
         public CameraController cameraController;
-        public ShadowCasterController shadowCasterController;
-        
-        [Header("Objects")]
-        public RenderTexture renderTexture;
-        public GameObject shadowProjectionQuad;
+        public ShadowProjector shadowProjector;
 
         [Header("Gameplay")]
         public DifficultyLevel difficultyLevel = DifficultyLevel.Easy;
-        
-        [Header("Debug")]
-        public GameObject snapshotQuad;
-        
+
         public enum DifficultyLevel
         {
+            NotSelected,
             Easy,
             Medium,
             Hard
@@ -45,16 +39,22 @@ namespace InTheShadow
             GameOverShowMenu
         }
         
-        private Dictionary<GameState, _GameState> _gameStateDictionary = new Dictionary<GameState, _GameState>();
+        private readonly Dictionary<GameState, _GameState> _gameStateDictionary = new Dictionary<GameState, _GameState>();
         
         private _GameState _activeState;
-        
+
+        // ReSharper disable Unity.PerformanceAnalysis
         public void SetActiveState(GameState newState)
         {
             if (!_gameStateDictionary.ContainsKey(newState))
             {
                 Debug.LogWarning($"The key <b>{newState}</b> doesn't exist so you can't activate the state!");
                 return;
+            }
+
+            if (_activeState)
+            {
+                _activeState.FinishState();
             }
 
             _activeState = _gameStateDictionary[newState];
@@ -67,10 +67,27 @@ namespace InTheShadow
         [HideInInspector] public List<Quaternion> successfulRotations;
         [HideInInspector] public int resultIndex;
         [HideInInspector] public float resultValue;
-        
+
         // Start is called before the first frame update
         void Start()
         {
+            if (!inputManager)
+            {
+                Debug.LogWarning("Missing input manager!", this);
+            }
+            if (!uiManager)
+            {
+                Debug.LogWarning("Missing ui manager!", this);
+            }
+            if (!cameraController)
+            {
+                Debug.LogWarning("There is no camera!", this);
+            }
+            if (!shadowProjector)
+            {
+                Debug.LogWarning("Missing projector!", this);
+            }
+            
             (successfulSnapshots, successfulRotations) = ShadowSnapshotUtility.LoadSnapshotFromRawData(
                 Path.Combine("Assets/Resources/Snapshots", $"{SceneManager.GetActiveScene().name}_snapshot"));
 
@@ -81,7 +98,7 @@ namespace InTheShadow
                     continue;
                 }
 
-                game.InitState(gameManager: this);
+                game.InitState(this);
 
                 if (_gameStateDictionary.ContainsKey(game.State))
                 {
@@ -98,7 +115,7 @@ namespace InTheShadow
         // Update is called once per frame
         void Update()
         {
-            _activeState.StateUpdate();
+            _activeState.UpdateState();
         }
     }
 }

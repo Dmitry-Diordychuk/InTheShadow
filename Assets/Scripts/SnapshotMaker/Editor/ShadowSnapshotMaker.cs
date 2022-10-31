@@ -69,7 +69,7 @@ namespace InTheShadow.Editor
             string filename = $"{SceneManager.GetActiveScene().name}_snapshot";
             string path = "Assets/Resources/Snapshots";
             
-            ShadowSnapshotUtility.SaveSnapshotAsRawData(snapshot, sampleRotation, path, filename);
+            //ShadowSnapshotUtility.SaveSnapshotAsRawData(snapshot, sampleRotation, path, filename);
         }
     }
 }

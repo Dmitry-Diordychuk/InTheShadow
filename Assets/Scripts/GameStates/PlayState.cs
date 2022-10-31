@@ -1,43 +1,41 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
-namespace InTheShadow
+namespace InTheShadow.GameStates
 {
 	public class PlayState : _GameState
     {
-        public override void InitState(GameManager gameManager)
-		{
-			base.InitState(gameManager);
-            State = GameManager.GameState.Play;
-        }
+        [Range(0.0f, 1.0f)]
+        [SerializeField] private float shadowPrecisionForWin;
         
-        private Renderer _snapshotQuadRend;
+        public override void InitState(GameManager manager)
+		{
+            State = GameManager.GameState.Play;
+            base.InitState(manager);
+        }
+
         private Vector3 _cameraPosition;
         private Vector3 _cameraUp;
-        private Vector3 _shadowProjectionQuadNormal;
+        private Vector3 _projectorScreenNormal;
 
         public override void StartState()
         {
-            Camera mainCamera = Camera.main;
-            if (!mainCamera) throw new UnityException("Main camera doesn't exist");
-            Transform cameraTransform = mainCamera.transform;
+            Transform cameraTransform = gameManager.cameraController.gameObject.transform;
 
             _cameraPosition = cameraTransform.position;
             _cameraUp = cameraTransform.up;
-            _shadowProjectionQuadNormal = gameManager.shadowProjectionQuad.GetComponent<MeshFilter>().mesh.normals[0];
-            _snapshotQuadRend = gameManager.snapshotQuad.GetComponent<Renderer>();
+            _projectorScreenNormal = gameManager.shadowProjector.screen.GetNormal();
         }
 
         private int _resultIndex;
-		public override void StateUpdate()
+		public override void UpdateState()
 		{
-			InputProcessing();
+            base.UpdateState();
             
-			(gameManager.resultValue, gameManager.resultIndex) = CalculateCurrentResult();
+            InputProcessing();
 
-            gameManager.uiManager.SetProgress(gameManager.resultValue);
+            (gameManager.resultValue, gameManager.resultIndex) = CalculateCurrentResult();
+
+            gameManager.uiManager.SetShadowComparisonProgressInPercent(gameManager.resultValue);
 
             if (CheckGameOver(gameManager.resultValue))
             {
@@ -49,33 +47,45 @@ namespace InTheShadow
         {
             if (gameManager.inputManager.IsLeftMouseDown)
             {
+                ShadowCasterGroup shadowCasterGroup = gameManager.shadowProjector.shadowCasters;
+                
                 if (gameManager.difficultyLevel == GameManager.DifficultyLevel.Hard && gameManager.inputManager.IsShiftKeyDown)
                 {
-                    gameManager.shadowCasterController.RotateAll(_shadowProjectionQuadNormal, 
-                        -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
+                    shadowCasterGroup.transform.Rotate(
+                        _projectorScreenNormal, 
+                        -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f,
+                        Space.World);
                 }
-                else if (gameManager.difficultyLevel > GameManager.DifficultyLevel.Easy &&
-                         gameManager.inputManager.IsCtrlKeyDown)
+                else if (gameManager.difficultyLevel > GameManager.DifficultyLevel.Easy && gameManager.inputManager.IsCtrlKeyDown)
                 {
-                    gameManager.shadowCasterController.Rotate(_shadowProjectionQuadNormal, 
-                        -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
+                    shadowCasterGroup.GetSelectedShadowCaster().transform.Rotate(
+                        _projectorScreenNormal, 
+                        -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f,
+                        Space.World);
                 }
                 else
                 {
-                    gameManager.shadowCasterController.Rotate(_cameraUp,
-                        -gameManager.inputManager.MousePositionDelta.x * Time.deltaTime * 10.0f);
+                    ShadowCaster shadowCaster = gameManager.shadowProjector.shadowCasters.GetSelectedShadowCaster();
+                    
+                    shadowCaster.transform.Rotate(
+                        shadowCaster.gameObject.transform.up, 
+                        -gameManager.inputManager.MousePositionDelta.x * Time.deltaTime * 10.0f,
+                        Space.World);
+                    
                     if (gameManager.difficultyLevel >= GameManager.DifficultyLevel.Medium)
                     {
-                        Vector3 cameraToShadowCaster = gameManager.shadowCasterController.gameObject.transform.position - _cameraPosition;
+                        Vector3 cameraToShadowCaster = gameManager.shadowProjector.shadowCasters.gameObject.transform.position - _cameraPosition;
                         Vector3 cameraUpCrossCameraToShadowCaster = Vector3.Cross(_cameraUp, cameraToShadowCaster);
-                        gameManager.shadowCasterController.Rotate(cameraUpCrossCameraToShadowCaster,
-                            gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f);
+                        
+                        shadowCaster.transform.Rotate(
+                            cameraUpCrossCameraToShadowCaster, 
+                            gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f,
+                            Space.World);
                     }
                 }
             }
         }
-
-        private int _currentSnapshotOnQuad = -1;
+        
         private (float, int) CalculateCurrentResult()
         {
             int bestResultIndex = -1;
@@ -83,7 +93,7 @@ namespace InTheShadow
             for (int i = 0; i < gameManager.successfulSnapshots.Count; i++)
             {
                 float snapshotsComparisonResultPercent = ShadowSnapshotUtility.CompareSnapshots(
-                    ShadowSnapshotUtility.GetShadowSnapshot(gameManager.renderTexture),
+                    ShadowSnapshotUtility.GetShadowSnapshot(gameManager.shadowProjector.projectorCamera.GetRenderTarget()),
                     gameManager.successfulSnapshots[i]);
                 
                 if (snapshotsComparisonResultPercent >= bestResult)
@@ -94,10 +104,10 @@ namespace InTheShadow
             }
             
             // Debug visualisation
-            if (_currentSnapshotOnQuad != bestResultIndex)
+            DebugSnapshotVisualizer debugSnapshotVisualizer = gameManager.shadowProjector.TryGetDebugSnapshotVisualizer();
+            if (debugSnapshotVisualizer && bestResultIndex != -1)
             {
-                _snapshotQuadRend.material.mainTexture = gameManager.successfulSnapshots[bestResultIndex];
-                _currentSnapshotOnQuad = bestResultIndex;
+                debugSnapshotVisualizer.SetSnapshot(gameManager.successfulSnapshots[bestResultIndex], bestResultIndex);
             }
 
             return (bestResult, bestResultIndex);
@@ -108,7 +118,7 @@ namespace InTheShadow
         private float _timer;
         private bool CheckGameOver(float currentResult)
         {
-            if (currentResult > 0.97)
+            if (currentResult > shadowPrecisionForWin)
             {
                 if (!_isTimerActive)
                 {

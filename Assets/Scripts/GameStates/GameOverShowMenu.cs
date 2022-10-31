@@ -15,8 +15,9 @@ namespace InTheShadow
 			
 		}
 		
-		public override void StateUpdate()
+		public override void UpdateState()
 		{
+			base.UpdateState();
 			Debug.Log("GAME OVER MENU");
 		}
 	}

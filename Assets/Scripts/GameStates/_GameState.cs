@@ -7,18 +7,24 @@ namespace InTheShadow
 		public GameManager.GameState State { get; protected set; }
 
 		protected GameManager gameManager;
-
-		public virtual void InitState(GameManager gameManager)
+		
+		public virtual void InitState(GameManager manager)
 		{
-			this.gameManager = gameManager;
+			this.gameManager = manager;
 		}
-
+		
 		public virtual void StartState()
 		{
 			
 		}
 		
-		public virtual void StateUpdate()
+		private bool _isStarted;
+		public virtual void UpdateState()
+		{
+			
+		}
+
+		public virtual void FinishState()
 		{
 			
 		}
