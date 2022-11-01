@@ -88,7 +88,7 @@ namespace InTheShadow
                 Debug.LogWarning("Missing projector!", this);
             }
             
-            (successfulSnapshots, successfulRotations) = ShadowSnapshotUtility.LoadSnapshotFromRawData(
+            (successfulSnapshots, successfulRotations) = SnapshotUtility.LoadSnapshotFromRawData(
                 Path.Combine("Assets/Resources/Snapshots", $"{SceneManager.GetActiveScene().name}_snapshot"));
 
             foreach (_GameState game in allGameStates)

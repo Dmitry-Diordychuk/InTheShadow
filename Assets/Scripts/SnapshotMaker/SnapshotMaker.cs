@@ -26,14 +26,14 @@ namespace InTheShadow
 
         public void MakeSnapshot()
         {
-            Texture2D snapshot = ShadowSnapshotUtility.GetShadowSnapshot(projectorCamera.GetRenderTarget());
+            Texture2D snapshot = SnapshotUtility.GetShadowSnapshot(projectorCamera.GetRenderTarget());
 
             string filename = $"{SceneManager.GetActiveScene().name}_snapshot";
             string path = "Assets/Resources/Snapshots";
 
             List<Quaternion> rotations = shadowCasterGroup.GetAllRotations();
 
-            ShadowSnapshotUtility.SaveSnapshotAsRawData(snapshot, rotations, path, filename);
+            SnapshotUtility.SaveSnapshotAsRawData(snapshot, rotations, path, filename);
         }
     }
 }

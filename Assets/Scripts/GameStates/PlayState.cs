@@ -2,15 +2,39 @@
 
 namespace InTheShadow.GameStates
 {
-	public class PlayState : _GameState
+    public class PlayState : _GameState
     {
         [Range(0.0f, 1.0f)]
         [SerializeField] private float shadowPrecisionForWin;
+        
+        [SerializeField] private ComputeShader shader;
+        [SerializeField] private Material debugMaterial;
+        [SerializeField] private RenderTexture cameraRT;
+        
+        //private RenderTexture _cameraRT;
+        private ComputeBuffer _comparisonShaderResult;
+        private int _kernel;
+        private uint _threadsX;
+        private uint _threadsY;
+        private float[] _result;
         
         public override void InitState(GameManager manager)
 		{
             State = GameManager.GameState.Play;
             base.InitState(manager);
+            
+            _kernel = shader.FindKernel ("CSMain");
+            shader.GetKernelThreadGroupSizes(_kernel, out _threadsX, out _threadsY, out _);
+            
+            cameraRT = gameManager.shadowProjector.projectorCamera.GetRenderTarget();
+
+            _comparisonShaderResult = new ComputeBuffer(cameraRT.width * cameraRT.height, sizeof(float));
+            shader.SetBuffer(_kernel, "Result", _comparisonShaderResult);
+            shader.SetInt("Size", cameraRT.width);
+            
+            shader.SetTexture(_kernel, "Camera", cameraRT);
+            
+            _result = new float[cameraRT.width * cameraRT.height];
         }
 
         private Vector3 _cameraPosition;
@@ -42,8 +66,14 @@ namespace InTheShadow.GameStates
                 gameManager.SetActiveState(GameManager.GameState.GameOverAnimation);
             }
 		}
-		
-		private void InputProcessing()
+
+        public override void FinishState()
+        {
+            base.FinishState();
+            _comparisonShaderResult.Release();
+        }
+
+        private void InputProcessing()
         {
             if (gameManager.inputManager.IsLeftMouseDown)
             {
@@ -92,10 +122,30 @@ namespace InTheShadow.GameStates
             float bestResult = -1.0f;
             for (int i = 0; i < gameManager.successfulSnapshots.Count; i++)
             {
-                float snapshotsComparisonResultPercent = ShadowSnapshotUtility.CompareSnapshots(
-                    ShadowSnapshotUtility.GetShadowSnapshot(gameManager.shadowProjector.projectorCamera.GetRenderTarget()),
-                    gameManager.successfulSnapshots[i]);
+                // float snapshotsComparisonResultPercent = SnapshotUtility.CompareSnapshots(
+                //     SnapshotUtility.GetShadowSnapshot(gameManager.shadowProjector.projectorCamera.GetRenderTarget()),
+                //     gameManager.successfulSnapshots[i]);
+
                 
+                Texture texture2 = gameManager.successfulSnapshots[i];
+                shader.SetTexture(_kernel, "Sample", texture2);
+
+                shader.Dispatch(
+                    _kernel, 
+                    (int)(cameraRT.width / _threadsX), 
+                    (int)(cameraRT.height / _threadsY), 
+                    1);
+                
+                
+                _comparisonShaderResult.GetData(_result);
+
+                float sum = 0.0f;
+                foreach (var value in _result)
+                {
+                    sum += value;
+                }
+
+                float snapshotsComparisonResultPercent = 1.0f - sum / (cameraRT.width * cameraRT.height);
                 if (snapshotsComparisonResultPercent >= bestResult)
                 {
                     bestResult = snapshotsComparisonResultPercent;

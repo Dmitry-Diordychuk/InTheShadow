@@ -64,7 +64,7 @@ namespace InTheShadow.Editor
 
         private void MakeSnapshot(RenderTexture renderTexture, Quaternion sampleRotation)
         {
-            Texture2D snapshot = ShadowSnapshotUtility.GetShadowSnapshot(renderTexture);
+            Texture2D snapshot = SnapshotUtility.GetShadowSnapshot(renderTexture);
 
             string filename = $"{SceneManager.GetActiveScene().name}_snapshot";
             string path = "Assets/Resources/Snapshots";
