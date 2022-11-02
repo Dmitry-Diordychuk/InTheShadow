@@ -64,7 +64,7 @@ namespace InTheShadow
         
         // Init Utilities
         [HideInInspector] public List<Texture2D> successfulSnapshots;
-        [HideInInspector] public List<Quaternion> successfulRotations;
+        [HideInInspector] public List<List<Quaternion>> successfulRotations;
         [HideInInspector] public int resultIndex;
         [HideInInspector] public float resultValue;
 
@@ -88,7 +88,7 @@ namespace InTheShadow
                 Debug.LogWarning("Missing projector!", this);
             }
             
-            (successfulSnapshots, successfulRotations) = SnapshotUtility.LoadSnapshotFromRawData(
+            (successfulSnapshots, successfulRotations) = shadowProjector.snapshotUtility.LoadSnapshots(
                 Path.Combine("Assets/Resources/Snapshots", $"{SceneManager.GetActiveScene().name}_snapshot"));
 
             foreach (_GameState game in allGameStates)

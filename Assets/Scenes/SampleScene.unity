@@ -123,6 +123,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &406715946 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7654048598681828238, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}
+  m_PrefabInstance: {fileID: 7654048598685578243}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c49bbfc13a1ecd449644cefd5782004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &477578064 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7654048598888134483, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}
@@ -831,6 +842,14 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7654048598681828232, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}
+      propertyPath: m_Name
+      value: SnapshotUtility
+      objectReference: {fileID: 0}
+    - target: {fileID: 7654048598681828238, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}
+      propertyPath: comparisonShader
+      value: 
+      objectReference: {fileID: 7200000, guid: d044017d8a01a8a4395c204057ac85e0, type: 3}
     - target: {fileID: 7654048598888134476, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}
       propertyPath: m_Name
       value: ShadowProjector
@@ -879,6 +898,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7654048598888134483, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}
+      propertyPath: snapshotUtility
+      value: 
+      objectReference: {fileID: 406715946}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f62ea6ae4b253d4d816dd3ad8a00381, type: 3}

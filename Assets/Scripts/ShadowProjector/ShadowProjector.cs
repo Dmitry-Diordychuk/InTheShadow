@@ -11,7 +11,8 @@ namespace InTheShadow
         public ShadowProjectorScreen screen;
         public ShadowProjectorSpotlight spotlight;
         public ShadowCasterGroup shadowCasters;
-        
+        public SnapshotUtility snapshotUtility;
+
         [Header("Debug")]
         public DebugSnapshotVisualizer snapshotVisualizer;
 

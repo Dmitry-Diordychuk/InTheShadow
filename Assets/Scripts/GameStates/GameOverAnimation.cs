@@ -46,7 +46,7 @@ namespace InTheShadow
 			gameManager.cameraController.transform.position = Vector3.Lerp(_cameraStartPosition, _cameraEndGamePosition, _fractionOfJourney);
 			gameManager.cameraController.transform.rotation = Quaternion.Slerp(_cameraStartRotation, _cameraEndRotation, _fractionOfJourney);
 			
-			gameManager.shadowProjector.shadowCasters.MakePerfectShadow(gameManager.successfulRotations, _fractionOfJourney);
+			gameManager.shadowProjector.shadowCasters.MakePerfectShadow(gameManager.successfulRotations[gameManager.resultIndex], _fractionOfJourney);
 			
 			if (_fractionOfJourney >= 1.0f)
 			{
