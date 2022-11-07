@@ -9,29 +9,29 @@ namespace InTheShadow.CustomPostProcessing
     {
         private class BlackAndWhiteRenderPass : ScriptableRenderPass
         {
-            private RTHandle _source;
+            private RenderTargetIdentifier _source;
 
             private readonly Material _material;
-            private readonly RTHandle _tempRTHandler;
+            private RenderTargetHandle _tempRTHandler;
 
             public BlackAndWhiteRenderPass(Material material)
             {
                 this._material = material;
-                _tempRTHandler = RTHandles.Alloc("_TemporaryColorTexture", name: "_TemporaryColorTexture");
+                _tempRTHandler.Init("_TemporaryColorTexture");
             }
 
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
             {
-                _source = renderingData.cameraData.renderer.cameraColorTargetHandle;
-                cmd.GetTemporaryRT(Shader.PropertyToID(_tempRTHandler.name), renderingData.cameraData.cameraTargetDescriptor);
+                _source = renderingData.cameraData.renderer.cameraColorTarget;
+                cmd.GetTemporaryRT(_tempRTHandler.id, renderingData.cameraData.cameraTargetDescriptor);
             }
             
             public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
             {
                 CommandBuffer commandBuffer = CommandBufferPool.Get("CustomBlitRenderPass");
                 
-                Blit(commandBuffer, _source, _tempRTHandler, _material);
-                Blit(commandBuffer, _tempRTHandler, _source);
+                Blit(commandBuffer, _source, _tempRTHandler.Identifier(), _material);
+                Blit(commandBuffer, _tempRTHandler.Identifier(), _source);
 
                 context.ExecuteCommandBuffer(commandBuffer);
                 CommandBufferPool.Release(commandBuffer);

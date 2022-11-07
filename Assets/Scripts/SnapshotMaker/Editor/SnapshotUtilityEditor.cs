@@ -14,6 +14,8 @@ namespace InTheShadow.Editor
 
 		void OnEnable()
 		{
+			Debug.Log("HERE");
+			
 			// Setup the SerializedProperties.
 			_projectorCameraProp = serializedObject.FindProperty("projectorCamera");
 			_shadowCasterGroupProp = serializedObject.FindProperty("shadowCasterGroup");

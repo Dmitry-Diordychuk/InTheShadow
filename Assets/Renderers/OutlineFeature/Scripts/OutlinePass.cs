@@ -8,6 +8,7 @@ namespace InTheShadow
 {
     public class OutlinePass : ScriptableRenderPass
     {
+        private const string ProfilerTag = "Outline";
         private readonly Material _material;
 
         public OutlinePass(Material material)
@@ -17,10 +18,10 @@ namespace InTheShadow
 
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
-            var cmd = CommandBufferPool.Get("Outline");
+            var cmd = CommandBufferPool.Get(ProfilerTag);
 
-            using (new ProfilingScope(cmd, new ProfilingSampler("Outline")))
-            {
+            using (new ProfilingScope(cmd, new ProfilingSampler(ProfilerTag)))
+            {            
                 var mesh = RenderingUtils.fullscreenMesh;
                 cmd.DrawMesh(mesh, Matrix4x4.identity, _material, 0, 0);
             }

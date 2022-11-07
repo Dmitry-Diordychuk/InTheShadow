@@ -31,8 +31,8 @@ namespace InTheShadow
 		[SerializeField] private Material outlineMaterial;
 		[SerializeField] private RenderPassEvent renderPassEvent;
 
-		private RTHandle _renderTexture;
-		private RTHandle _blurTexture;
+		private RenderTargetHandle _blurTexture;
+		private RenderTargetHandle _renderTexture;
 
 		private OutlineRenderObjectsPass _renderPass;
 		private BlurPass _blurPass;
@@ -40,23 +40,21 @@ namespace InTheShadow
 
 		public override void Create()
 		{
-			_renderTexture = RTHandles.Alloc(renderTextureName, renderTextureName);
-			_blurTexture = RTHandles.Alloc(blurTextureName, blurTextureName);
+			_renderTexture.Init(renderTextureName);
+			_blurTexture.Init(blurTextureName);
 
 			_renderPass = new OutlineRenderObjectsPass(
-				_renderTexture,
-				renderSettings.layerMask,
+				_renderTexture, 
+			renderSettings.layerMask, 
 				renderSettings.overrideMaterial
 			);
-
 			_blurPass = new BlurPass(
-				_renderTexture,
-				_blurTexture,
-				blurSettings.blurMaterial,
-				blurSettings.downSample,
+				_renderTexture.Identifier(),
+				_blurTexture, 
+				blurSettings.blurMaterial, 
+				blurSettings.downSample, 
 				blurSettings.passesCount
 			);
-
 			_outlinePass = new OutlinePass(outlineMaterial);
 
 			_renderPass.renderPassEvent = renderPassEvent;
@@ -64,10 +62,7 @@ namespace InTheShadow
 			_outlinePass.renderPassEvent = renderPassEvent;
 		}
 
-		public override void AddRenderPasses(
-			ScriptableRenderer renderer,
-			ref RenderingData renderingData
-		)
+		public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
 		{
 			renderer.EnqueuePass(_renderPass);
 			renderer.EnqueuePass(_blurPass);

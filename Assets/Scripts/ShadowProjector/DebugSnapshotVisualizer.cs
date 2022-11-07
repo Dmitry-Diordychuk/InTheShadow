@@ -15,17 +15,7 @@ namespace InTheShadow
         {
             _snapshotRenderer = GetComponent<Renderer>();
         }
-        
-        
-        // Debug visualisation
-        // DebugSnapshotVisualizer debugSnapshotVisualizer = gameManager.shadowProjector.TryGetDebugSnapshotVisualizer();
-        //     if (debugSnapshotVisualizer && _currentSnapshotOnQuad != bestResultIndex)
-        // {
-        //     debugSnapshotVisualizer.SetSnapshot(gameManager.successfulSnapshots[bestResultIndex]);
-        //     _currentSnapshotOnQuad = bestResultIndex;
-        // }
-            
-        
+
         public void SetSnapshot(Texture texture, int index)
         {
             if (index < 0)

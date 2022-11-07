@@ -15,17 +15,17 @@ MonoBehaviour:
   m_Active: 1
   renderTextureName: _SolidTexture
   renderSettings:
-    overrideMaterial: {fileID: 2100000, guid: 2a45fde2c7e56784c96107b4ce64a503, type: 2}
+    overrideMaterial: {fileID: 2100000, guid: 950bf36994eecd44e9f8fa06e0db6f00, type: 2}
     layerMask:
       serializedVersion: 2
       m_Bits: 64
   blurTextureName: _BlurTexture
   blurSettings:
-    blurMaterial: {fileID: 2100000, guid: 263abc17fb1a5954eaaae2253b5ef290, type: 2}
+    blurMaterial: {fileID: 2100000, guid: a82354c4e3999de4aa50966cb694f776, type: 2}
     downSample: 1
     passesCount: 2
-  outlineMaterial: {fileID: 2100000, guid: 77f9164c1972de44382cef099f69cb11, type: 2}
-  renderPassEvent: 1000
+  outlineMaterial: {fileID: 2100000, guid: 9c3583465eb36c246ae63ae409770b3b, type: 2}
+  renderPassEvent: 500
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

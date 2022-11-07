@@ -140,13 +140,12 @@ MonoBehaviour:
   uiManager: {fileID: 0}
   cameraController: {fileID: 0}
   shadowProjector: {fileID: 0}
-  difficultyLevel: 1
+  difficultyLevel: 3
   allGameStates:
   - {fileID: 7096889911172873764}
   - {fileID: 7096889910375533318}
   - {fileID: 7096889909986436125}
   successfulSnapshots: []
-  successfulRotations: []
   resultIndex: 0
   resultValue: 0
 --- !u!1 &7096889911172873765
@@ -194,6 +193,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shadowPrecisionForWin: 0.98
-  shader: {fileID: 7200000, guid: d044017d8a01a8a4395c204057ac85e0, type: 3}
-  debugMaterial: {fileID: 2100000, guid: 3db801bbc8d21e64093f1e83008e2ec2, type: 2}
-  cameraRT: {fileID: 0}

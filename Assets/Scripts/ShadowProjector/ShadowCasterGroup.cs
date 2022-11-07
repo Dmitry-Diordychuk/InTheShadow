@@ -8,7 +8,7 @@ namespace InTheShadow
 		[SerializeField] private List<ShadowCaster> shadowCasters;
 
 		private ShadowCaster _currentShadowCaster;
-
+		
 		private void Start()
 		{
 			if (shadowCasters.Count == 0)
@@ -25,6 +25,7 @@ namespace InTheShadow
 				{
 					caster.selectEvent.AddListener(SetSelectedShadowCaster);
 				}
+				SetSelectedShadowCaster(shadowCasters[0]);
 			}
 		}
 		

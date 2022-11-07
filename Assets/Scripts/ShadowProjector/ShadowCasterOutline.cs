@@ -9,7 +9,7 @@ namespace InTheShadow
     {
         private void Start()
         {
-            gameObject.layer = LayerMask.NameToLayer("Default");
+            gameObject.layer = LayerMask.NameToLayer("ShadowCaster");
         }
 
         public void TurnOn()
@@ -19,7 +19,7 @@ namespace InTheShadow
 
         public void TurnOff()
         {
-            gameObject.layer = LayerMask.NameToLayer("Default");
+            gameObject.layer = LayerMask.NameToLayer("ShadowCaster");
         }
     }
 }
