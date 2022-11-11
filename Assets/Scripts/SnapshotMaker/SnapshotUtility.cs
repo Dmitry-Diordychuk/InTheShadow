@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.SceneManagement;
 
 namespace InTheShadow
@@ -23,14 +24,17 @@ namespace InTheShadow
         public ShadowCasterGroup shadowCasterGroup;
 
         public ComputeShader comparisonShader;
-        
+        public ComputeShader rotateShader;
+        public float startDegree = 0.0f;
+        public float endDegree = 180.0f;
+        public float stepDegree = 5.0f;
+
         private RenderTexture _cameraRT;
         private ComputeBuffer _comparisonShaderBuffer;
         private float[] _comparisonResult;
         private int _kernel;
         private uint _threadsX;
         private uint _threadsY;
-        
 
         private void Start()
         {
@@ -46,7 +50,7 @@ namespace InTheShadow
             
             _kernel = comparisonShader.FindKernel ("CSMain");
             comparisonShader.GetKernelThreadGroupSizes(_kernel, out _threadsX, out _threadsY, out _);
-            
+
             _cameraRT = projectorCamera.GetRenderTarget();
 
             _comparisonShaderBuffer = new ComputeBuffer(_cameraRT.width * _cameraRT.height, sizeof(float));
@@ -110,21 +114,50 @@ namespace InTheShadow
         
         public void MakeSnapshot()
         {
-            Texture2D snapshot = GetShadowSnapshot(projectorCamera.GetRenderTarget());
-
+            Texture2D snapshot = ConvertToTexture2D(projectorCamera.GetRenderTarget());
+            
             string filename = $"{SceneManager.GetActiveScene().name}_snapshot";
             string path = "Assets/Resources/Snapshots";
-
+            
             List<Quaternion> rotations = shadowCasterGroup.GetAllRotations();
 
-            SaveSnapshotAsRawData(snapshot, rotations, path, filename);
+            RenderTexture rotationResult = new RenderTexture (snapshot.width, snapshot.height, 0)
+            {
+                enableRandomWrite = true
+            };
+            rotationResult.Create ();
+
+            rotateShader.SetTexture(_kernel, "Result", rotationResult);
+            rotateShader.SetTexture(_kernel, "Texture", snapshot);
+            rotateShader.SetFloat("Width", snapshot.width);
+            rotateShader.SetFloat("Height", snapshot.height);
+
+            for (float degree = Mathf.Min(startDegree, endDegree); degree <= Mathf.Max(startDegree, endDegree); degree += stepDegree)
+            {
+                rotateShader.SetFloat("Sin", Mathf.Sin(degree));
+                rotateShader.SetFloat("Cos", Mathf.Cos(degree));
+                rotateShader.SetFloat("Rad", Mathf.Deg2Rad * degree);
+
+                rotateShader.Dispatch(
+                    _kernel,
+                    Mathf.CeilToInt((float)snapshot.width / _threadsX),
+                    Mathf.CeilToInt((float)snapshot.height / _threadsY),
+                    1);
+
+                Texture2D rotatedTexture = ConvertToTexture2D(rotationResult);
+
+                SaveSnapshotAsRawData(rotatedTexture, rotations, path, filename);
+            }
         }
         
-        private static Texture2D GetShadowSnapshot(RenderTexture renderTexture)
+        private static Texture2D ConvertToTexture2D(RenderTexture renderTexture)
         {
+            RenderTexture temp = RenderTexture.active;
             RenderTexture.active = renderTexture;
             Texture2D snapshot = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
             snapshot.ReadPixels(new Rect(0, 0, snapshot.width, snapshot.height), 0, 0);
+            snapshot.Apply();
+            RenderTexture.active = temp;
             return snapshot;
         }
         

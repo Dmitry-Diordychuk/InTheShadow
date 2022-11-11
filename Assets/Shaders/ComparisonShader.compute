@@ -11,6 +11,5 @@ int Size;
 [numthreads(10,10,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-	float result = abs(Camera[id.xy].x - Sample[id.xy].x);
-	Result[id.x * Size + id.y] = float4(result, result, result, 0.0f);
+	Result[id.x * Size + id.y] = abs(Camera[id.xy].x - Sample[id.xy].x);
 }

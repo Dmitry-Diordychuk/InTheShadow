@@ -31,20 +31,25 @@ namespace InTheShadow.GameStates
 		{
             base.UpdateState();
             
-            InputProcessing();
+            bool isAnyInput = InputProcessing();
 
-            (gameManager.resultValue, gameManager.resultIndex) = CalculateCurrentResult();
+            if (isAnyInput)
+            {
+                (gameManager.resultValue, gameManager.resultIndex) = CalculateCurrentResult();
 
-            gameManager.uiManager.SetShadowComparisonProgressInPercent(gameManager.resultValue);
-
+                gameManager.uiManager.SetShadowComparisonProgressInPercent(gameManager.resultValue);
+            }
+            
             if (CheckGameOver(gameManager.resultValue))
             {
                 gameManager.SetActiveState(GameManager.GameState.GameOverAnimation);
             }
-		}
-
-        private void InputProcessing()
+        }
+        
+        private bool InputProcessing()
         {
+            bool isAnyInput = Time.timeSinceLevelLoad == 0.0f;
+
             if (gameManager.inputManager.IsLeftMouseDown)
             {
                 ShadowCasterGroup shadowCasterGroup = gameManager.shadowProjector.shadowCasters;
@@ -55,6 +60,7 @@ namespace InTheShadow.GameStates
                         _projectorScreenNormal, 
                         -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f,
                         Space.World);
+                    isAnyInput = true;
                 }
                 else if (gameManager.difficultyLevel > GameManager.DifficultyLevel.Easy && gameManager.inputManager.IsCtrlKeyDown)
                 {
@@ -62,6 +68,7 @@ namespace InTheShadow.GameStates
                         _projectorScreenNormal, 
                         -gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f,
                         Space.World);
+                    isAnyInput = true;
                 }
                 else
                 {
@@ -82,8 +89,11 @@ namespace InTheShadow.GameStates
                             gameManager.inputManager.MousePositionDelta.y * Time.deltaTime * 10.0f,
                             Space.World);
                     }
+                    isAnyInput = true;
                 }
             }
+
+            return isAnyInput;
         }
         
         private (float, int) CalculateCurrentResult()
@@ -92,9 +102,11 @@ namespace InTheShadow.GameStates
             float bestResult = -1.0f;
             for (int i = 0; i < gameManager.successfulSnapshots.Count; i++)
             {
+                float start = Time.realtimeSinceStartup;
                 float snapshotsComparisonResultPercent =
                     gameManager.shadowProjector.snapshotUtility.CompareSnapshotWithProjection(gameManager.successfulSnapshots[i]);
-
+                Debug.Log(Time.realtimeSinceStartup - start);
+                
                 if (snapshotsComparisonResultPercent >= bestResult)
                 {
                     bestResult = snapshotsComparisonResultPercent;
