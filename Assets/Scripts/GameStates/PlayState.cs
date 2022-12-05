@@ -75,7 +75,7 @@ namespace InTheShadow.GameStates
                     ShadowCaster shadowCaster = gameManager.shadowProjector.shadowCasters.GetSelectedShadowCaster();
                     
                     shadowCaster.transform.Rotate(
-                        shadowCaster.gameObject.transform.up, 
+                        Vector3.up,
                         -gameManager.inputManager.MousePositionDelta.x * Time.deltaTime * 10.0f,
                         Space.World);
                     

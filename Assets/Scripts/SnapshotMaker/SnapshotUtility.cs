@@ -133,8 +133,6 @@ namespace InTheShadow
 
             for (float degree = Mathf.Min(startDegree, endDegree); degree <= Mathf.Max(startDegree, endDegree); degree += stepDegree)
             {
-                Debug.Log($"{startDegree} {endDegree} {degree} {stepDegree}");
-                
                 rotateShader.SetFloat("Sin", Mathf.Sin(degree));
                 rotateShader.SetFloat("Cos", Mathf.Cos(degree));
                 rotateShader.SetFloat("Rad", Mathf.Deg2Rad * degree);

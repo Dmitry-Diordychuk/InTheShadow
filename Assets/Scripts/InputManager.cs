@@ -13,7 +13,6 @@ namespace InTheShadow
         private Vector3 _mousePositionDelta;
 
         public bool IsLeftMouseDown => _leftMouseDownStarted;
-
         public bool IsCtrlKeyDown => Input.GetKey(KeyCode.LeftControl);
         public bool IsShiftKeyDown => Input.GetKey(KeyCode.LeftShift);
         public Vector3 MousePositionDelta => _mousePositionDelta * sensitivity;
