@@ -6,6 +6,7 @@ namespace InTheShadow
 	{
 		// Movement speed in units per second.
 		[SerializeField] private float lerpSpeed = 1.0F;
+		[SerializeField] private float lerpDistanceToScreen = 1.0f;
 		
 		// Time when the movement started.
 		private float _lerpStartTime;
@@ -28,7 +29,7 @@ namespace InTheShadow
 		{
 			_cameraStartPosition = gameManager.cameraController.gameObject.transform.position;
 			Vector3 screenNormal = gameManager.shadowProjector.screen.GetNormal();
-			_cameraEndGamePosition = gameManager.shadowProjector.screen.GetPosition() + screenNormal;
+			_cameraEndGamePosition = gameManager.shadowProjector.screen.GetPosition() + screenNormal * lerpDistanceToScreen;
 			
 			_cameraStartRotation = gameManager.cameraController.transform.rotation;
 			_cameraEndRotation = _cameraStartRotation * Quaternion.Euler(0.0f, -25.0f, 0.0f);

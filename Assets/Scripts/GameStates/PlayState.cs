@@ -114,7 +114,7 @@ namespace InTheShadow.GameStates
             
             // Debug visualisation
             DebugSnapshotVisualizer debugSnapshotVisualizer = gameManager.shadowProjector.TryGetDebugSnapshotVisualizer();
-            if (debugSnapshotVisualizer && bestResultIndex != -1)
+            if (debugSnapshotVisualizer && debugSnapshotVisualizer.isActiveAndEnabled && bestResultIndex != -1)
             {
                 debugSnapshotVisualizer.SetSnapshot(gameManager.successfulSnapshots[bestResultIndex], bestResultIndex);
             }
