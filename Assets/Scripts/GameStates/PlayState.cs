@@ -102,11 +102,9 @@ namespace InTheShadow.GameStates
             float bestResult = -1.0f;
             for (int i = 0; i < gameManager.successfulSnapshots.Count; i++)
             {
-                float start = Time.realtimeSinceStartup;
                 float snapshotsComparisonResultPercent =
                     gameManager.shadowProjector.snapshotUtility.CompareSnapshotWithProjection(gameManager.successfulSnapshots[i]);
-                Debug.Log(Time.realtimeSinceStartup - start);
-                
+
                 if (snapshotsComparisonResultPercent >= bestResult)
                 {
                     bestResult = snapshotsComparisonResultPercent;
