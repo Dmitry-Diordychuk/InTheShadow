@@ -40,8 +40,8 @@ namespace InTheShadow.Editor
 			EditorGUILayout.PropertyField (_rotateShaderProp, new GUIContent ("Rotate shader"));
 			
 			EditorGUILayout.PropertyField(_startDegreeProp, new GUIContent ("Start degree"));
-			EditorGUILayout.PropertyField (_endDegreeProp, new GUIContent ("Degree step"));
-			EditorGUILayout.PropertyField (_stepDegreeProp, new GUIContent ("End degree"));
+			EditorGUILayout.PropertyField (_stepDegreeProp, new GUIContent ("Degree step"));
+			EditorGUILayout.PropertyField (_endDegreeProp, new GUIContent ("End degree"));
 			
 			if (GUILayout.Button("Save"))
 			{
