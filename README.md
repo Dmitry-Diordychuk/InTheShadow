@@ -4,5 +4,5 @@ Shadowmatic clone
 Gameplay:
 ![Gameplay](Gifs/Gameplay.gif)
 
-How it's work:
+How it works:
 ![HowItsWork](Gifs/HowItsWork.gif)
