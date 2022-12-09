@@ -1855,6 +1855,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UICanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 7892069856010873845, guid: 497f90812e61aeb40883fb9dac8a2787, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 497f90812e61aeb40883fb9dac8a2787, type: 3}
 --- !u!1001 &2068919040
